@@ -771,10 +771,10 @@
  */
 #define X_PROBE_OFFSET_FROM_EXTRUDER 23  // X offset: -left  +right  [of the nozzle]
 #define Y_PROBE_OFFSET_FROM_EXTRUDER 8  // Y offset: -front +behind [the nozzle]
-#define Z_PROBE_OFFSET_FROM_EXTRUDER -0.41 // Z offset: -below +above  [the nozzle]
+#define Z_PROBE_OFFSET_FROM_EXTRUDER -0.75 // Z offset: -below +above  [the nozzle]
 
 // Certain types of probes need to stay away from edges
-#define MIN_PROBE_EDGE  8
+#define MIN_PROBE_EDGE  20
 
 // X and Y axis travel speed (mm/m) between probes
 #define XY_PROBE_SPEED 8000
@@ -1080,11 +1080,11 @@
  * Override if the automatically selected points are inadequate.
  */
 #if ENABLED(AUTO_BED_LEVELING_3POINT) || ENABLED(AUTO_BED_LEVELING_UBL)
-  #define PROBE_PT_1_X 15
-  #define PROBE_PT_1_Y 180
-  #define PROBE_PT_2_X 15
+  #define PROBE_PT_1_X 25
+  #define PROBE_PT_1_Y 190
+  #define PROBE_PT_2_X 25
   #define PROBE_PT_2_Y 20
-  #define PROBE_PT_3_X 170
+  #define PROBE_PT_3_X 190
   #define PROBE_PT_3_Y 20
 #endif
 
