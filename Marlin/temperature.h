@@ -648,6 +648,10 @@ class Temperature {
 
     #endif // THERMAL_PROTECTION
 
+    #if ENABLED(FANCHECK)
+    static void checkFanSpeed();
+    static void countFanSpeed();
+    #endif // FANCHECK
 };
 
 extern Temperature thermalManager;

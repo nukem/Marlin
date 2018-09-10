@@ -1802,6 +1802,10 @@
 
 // @section extras
 
+// Fan check
+#define FANCHECK
+#define MIN_PRINT_FAN_SPEED 75
+
 // Increase the FAN PWM frequency. Removes the PWM noise but increases heating in the FET/Arduino
 //#define FAST_PWM_FAN
 

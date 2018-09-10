@@ -96,6 +96,9 @@
 #define KILL_PIN           -1
 
 #define FIL_RUNOUT_PIN     24   // Use for filament runout sensor
+#define TACH_0             79
+#define TACH_1             80
+
 
 #if ENABLED(ULTRA_LCD)
 
