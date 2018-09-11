@@ -208,6 +208,7 @@ int16_t Temperature::minttemp_raw[HOTENDS] = ARRAY_BY_HOTENDS(HEATER_0_RAW_LO_TE
 
 #if HAS_AUTO_FAN
   millis_t Temperature::next_auto_fan_check_ms = 0;
+  millis_t Temperature::extruder_autofan_last_check = 0;
 #endif
 
 uint8_t Temperature::soft_pwm_amount[HOTENDS];
@@ -806,6 +807,7 @@ void Temperature::manage_heater() {
     if (ELAPSED(ms, next_auto_fan_check_ms)) { // only need to check fan state very infrequently
       checkExtruderAutoFans();
       next_auto_fan_check_ms = ms + 2500UL;
+      extruder_autofan_last_check = ms;
     }
   #endif
 
@@ -2432,10 +2434,10 @@ void Temperature::isr() {
     //  }
     }
     void Temperature::countFanSpeed()
-    {
+    {static unsigned long extruder_autofan_last_check;
       //SERIAL_ECHOPGM("edge counter 1:"); MYSERIAL.println(fan_edge_counter[1]);
-      fan_speed[0] = (fan_edge_counter[0] * (float(250) / millis()));
-      fan_speed[1] = (fan_edge_counter[1] * (float(250) / millis()));
+      fan_speed[0] = (fan_edge_counter[0] * (float(250) / (millis() - extruder_autofan_last_check)));
+      fan_speed[1] = (fan_edge_counter[1] * (float(250) / (millis() - extruder_autofan_last_check)));
       
       SERIAL_ECHOPGM("time interval: "); SERIAL_ECHOLN(millis_nc());
       SERIAL_ECHOPGM("Rising Edge: "); SERIAL_ECHOLN(t_fan_rising_edge);

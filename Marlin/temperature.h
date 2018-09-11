@@ -282,6 +282,7 @@ class Temperature {
 
     #if HAS_AUTO_FAN
       static millis_t next_auto_fan_check_ms;
+      static millis_t extruder_autofan_last_check;
     #endif
 
     #if ENABLED(FILAMENT_WIDTH_SENSOR)
