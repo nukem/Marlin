@@ -208,7 +208,6 @@ int16_t Temperature::minttemp_raw[HOTENDS] = ARRAY_BY_HOTENDS(HEATER_0_RAW_LO_TE
 
 #if HAS_AUTO_FAN
   millis_t Temperature::next_auto_fan_check_ms = 0;
-  millis_t Temperature::extruder_autofan_last_check = 0;
 #endif
 
 uint8_t Temperature::soft_pwm_amount[HOTENDS];
@@ -807,7 +806,6 @@ void Temperature::manage_heater() {
     if (ELAPSED(ms, next_auto_fan_check_ms)) { // only need to check fan state very infrequently
       checkExtruderAutoFans();
       next_auto_fan_check_ms = ms + 2500UL;
-      extruder_autofan_last_check = ms;
     }
   #endif
 
@@ -823,11 +821,6 @@ void Temperature::manage_heater() {
       planner.calculate_volumetric_for_width_sensor(measurement_delay[meas_shift_index]);
     }
   #endif // FILAMENT_WIDTH_SENSOR
-
-#if (defined(FANCHECK) && ((defined(TACH_0) && (TACH_0 >-1)) || (defined(TACH_1) && (TACH_1 > -1))))
-  countFanSpeed();
-  checkFanSpeed();
-#endif //(defined(TACH_0) && TACH_0 >-1) || (defined(TACH_1) && TACH_1 > -1)
 
   #if HAS_HEATED_BED
 
@@ -2409,49 +2402,5 @@ void Temperature::isr() {
     }
 
   #endif // AUTO_REPORT_TEMPERATURES
-
-  #if ENABLED(FANCHECK)
-    void Temperature::checkFanSpeed()
-    {
-    //   fans_check_enabled = (eeprom_read_byte((uint8_t*)EEPROM_FAN_CHECK_ENABLED) > 0);
-    //   static unsigned char fan_speed_errors[2] = { 0,0 };
-    // #if (defined(FANCHECK) && defined(TACH_0) && (TACH_0 >-1))
-    //   if ((fan_speed[0] == 0) && (current_temperature[0] > EXTRUDER_AUTO_FAN_TEMPERATURE)) fan_speed_errors[0]++;
-    //   else fan_speed_errors[0] = 0;
-    // #endif
-    // #if (defined(FANCHECK) && defined(TACH_1) && (TACH_1 >-1))
-    //   if ((fan_speed[1] == 0) && ((blocks_queued() ? block_buffer[block_buffer_tail].fan_speed : fanSpeed) > MIN_PRINT_FAN_SPEED)) fan_speed_errors[1]++;
-    //   else fan_speed_errors[1] = 0;
-    // #endif
-
-    //   if ((fan_speed_errors[0] > 5) && fans_check_enabled) {
-    //     fan_speed_errors[0] = 0;
-    //     fanSpeedError(0); //extruder fan
-    //   }
-    //   if ((fan_speed_errors[1] > 15) && fans_check_enabled) {
-    //     fan_speed_errors[1] = 0;
-    //     fanSpeedError(1); //print fan
-    //  }
-    }
-    void Temperature::countFanSpeed()
-    {static unsigned long extruder_autofan_last_check;
-      //SERIAL_ECHOPGM("edge counter 1:"); MYSERIAL.println(fan_edge_counter[1]);
-      fan_speed[0] = (fan_edge_counter[0] * (float(250) / (millis() - extruder_autofan_last_check)));
-      fan_speed[1] = (fan_edge_counter[1] * (float(250) / (millis() - extruder_autofan_last_check)));
-      
-      SERIAL_ECHOPGM("time interval: "); SERIAL_ECHOLN(millis_nc());
-      SERIAL_ECHOPGM("Rising Edge: "); SERIAL_ECHOLN(t_fan_rising_edge);
-      SERIAL_ECHOPGM("Falling Edge: "); SERIAL_ECHOLN(t_fan_falling_edge);
-      SERIAL_ECHOPGM("extruder fan speed:"); SERIAL_ECHOLN(fan_speed[0]); 
-      SERIAL_ECHOPGM("; edge counter:"); SERIAL_ECHOLN(fan_edge_counter[0]);
-      SERIAL_ECHOPGM("print fan speed:"); SERIAL_ECHOLN(fan_speed[1]); 
-      SERIAL_ECHOPGM("; edge counter:"); SERIAL_ECHOLN(fan_edge_counter[1]);
-      SERIAL_ECHOLNPGM(" ");
-
-      fan_edge_counter[0] = 0;
-      fan_edge_counter[1] = 0;      
-    }
-  #endif // FANCHECK
-
 
 #endif // HAS_TEMP_SENSOR
