@@ -495,6 +495,17 @@ float soft_endstop_min[XYZ] = { X_MIN_BED, Y_MIN_BED, Z_MIN_POS },
   int controllerFanSpeed; // = 0;
 #endif
 
+
+//Macro for print fan speed
+#define FAN_PULSE_WIDTH_LIMIT ((fanSpeed > 100) ? 3 : 4) //time in ms
+int fanSpeedBckp;
+unsigned long t_fan_rising_edge;
+unsigned long t_fan_falling_edge;
+int fanSpeed=0;
+int fan_edge_counter[2];
+int fan_speed[2];
+
+
 // The active extruder (tool). Set with T<extruder> command.
 uint8_t active_extruder; // = 0;
 
@@ -14427,6 +14438,42 @@ void stop() {
   }
 }
 
+
+#if (defined(FANCHECK) && defined(TACH_1) && (TACH_1 >-1))
+
+void setup_fan_interrupt() {
+//INT7
+	DDRE &= ~(1 << 7); //input pin
+	PORTE &= ~(1 << 7); //no internal pull-up
+
+	//start with sensing rising edge
+	EICRB &= ~(1 << 6);
+	EICRB |= (1 << 7);
+
+	//enable INT7 interrupt
+	EIMSK |= (1 << 7);
+}
+
+// The fan interrupt is triggered at maximum 325Hz (may be a bit more due to component tollerances),
+// and it takes 4.24 us to process (the interrupt invocation overhead not taken into account).
+ISR(INT7_vect) {
+	//measuring speed now works for fanSpeed > 18 (approximately), which is sufficient because MIN_PRINT_FAN_SPEED is higher
+
+	// if (fanSpeed < MIN_PRINT_FAN_SPEED) return;
+	if ((1 << 6) & EICRB) { //interrupt was triggered by rising edge
+		t_fan_rising_edge = millis_nc();
+	}
+	else { //interrupt was triggered by falling edge
+		t_fan_falling_edge = millis_nc();
+		if ((millis_nc() - t_fan_rising_edge) >= FAN_PULSE_WIDTH_LIMIT) {//this pulse was from sensor and not from pwm
+			fan_edge_counter[1] += 2; //we are currently counting all edges so lets count two edges for one pulse
+		}
+	}	
+	EICRB ^= (1 << 6); //change edge
+}
+
+#endif
+
 /**
  * Marlin entry-point: Set up before the program loop
  *  - Set up the kill pin, filament runout, power hold
@@ -14534,6 +14581,10 @@ void setup() {
   stepper.init();           // Init stepper. This enables interrupts!
 
   servo_init();             // Initialize all servos, stow servo probe
+
+#if defined(FANCHECK) && defined(TACH_1) && TACH_1 >-1
+	setup_fan_interrupt();
+#endif
 
   #if HAS_PHOTOGRAPH
     OUT_WRITE(PHOTOGRAPH_PIN, LOW);

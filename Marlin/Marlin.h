@@ -273,6 +273,23 @@ extern float current_position[XYZE], destination[XYZE];
 #define RAW_Y_POSITION(POS)     LOGICAL_TO_NATIVE(POS, Y_AXIS)
 #define RAW_Z_POSITION(POS)     LOGICAL_TO_NATIVE(POS, Z_AXIS)
 
+
+// Timer counter, incremented by the 1ms Arduino timer.
+// The standard Arduino timer() function returns this value atomically
+// by disabling / enabling interrupts. This is costly, if the interrupts are known
+// to be disabled.
+extern volatile unsigned long timer0_millis;
+// An unsynchronized equivalent to a standard Arduino millis() function.
+// To be used inside an interrupt routine.
+FORCE_INLINE unsigned long millis_nc() { return timer0_millis; }
+
+extern int fanSpeedBckp;
+extern unsigned long t_fan_rising_edge;
+extern unsigned long t_fan_falling_edge;
+extern int fanSpeed;
+extern int fan_edge_counter[2];
+extern int fan_speed[2];
+
 // Hotend Offsets
 #if HOTENDS > 1
   extern float hotend_offset[XYZ][HOTENDS];

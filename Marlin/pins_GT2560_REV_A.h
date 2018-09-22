@@ -40,10 +40,13 @@
 //
 #define X_MIN_PIN          22
 //#define X_MAX_PIN          24
+#define X_MAX_PIN          -1
 #define Y_MIN_PIN          26
-#define Y_MAX_PIN          28
+//#define Y_MAX_PIN          28
+#define Y_MAX_PIN          -1
 #define Z_MIN_PIN          30
-#define Z_MAX_PIN          32
+//#define Z_MAX_PIN          32
+#define Z_MAX_PIN          -1
 
 //
 // Steppers
@@ -51,22 +54,37 @@
 #define X_STEP_PIN         25
 #define X_DIR_PIN          23
 #define X_ENABLE_PIN       27
+#ifndef X_CS_PIN
+  #define X_CS_PIN         24
+#endif
 
 #define Y_STEP_PIN         31
 #define Y_DIR_PIN          33
 #define Y_ENABLE_PIN       29
+#ifndef Y_CS_PIN
+  #define Y_CS_PIN         28
+#endif
 
 #define Z_STEP_PIN         37
 #define Z_DIR_PIN          39
 #define Z_ENABLE_PIN       35
+#ifndef Z_CS_PIN
+  #define Z_CS_PIN         32
+#endif
 
 #define E0_STEP_PIN        43
 #define E0_DIR_PIN         45
 #define E0_ENABLE_PIN      41
+// #ifndef E0_CS_PIN
+//   #define E0_CS_PIN        42
+// #endif
 
 #define E1_STEP_PIN        49
 #define E1_DIR_PIN         47
 #define E1_ENABLE_PIN      48
+// #ifndef E1_CS_PIN
+//   #define E1_CS_PIN        44
+// #endif
 
 //
 // Temperature Sensors
@@ -95,7 +113,10 @@
 #define SUICIDE_PIN        54   // Must be enabled at startup to keep power flowing
 #define KILL_PIN           -1
 
-#define FIL_RUNOUT_PIN     24   // Use for filament runout sensor
+#define FIL_RUNOUT_PIN     32   // Use for filament runout sensor
+#define TACH_0             79
+#define TACH_1             80
+
 
 #if ENABLED(ULTRA_LCD)
 
