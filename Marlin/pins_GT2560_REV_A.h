@@ -113,7 +113,7 @@
 #define SUICIDE_PIN        54   // Must be enabled at startup to keep power flowing
 #define KILL_PIN           -1
 
-#define FIL_RUNOUT_PIN     32   // Use for filament runout sensor
+#define FIL_RUNOUT_PIN     -1   // Use for filament runout sensor
 #define TACH_0             79
 #define TACH_1             80
 
